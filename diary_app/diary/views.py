@@ -28,4 +28,4 @@ class DiaryAPIDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Diary.objects.all()
     serializer_class = DiarySerializer
 
-    permission_classes = (IsOwnerOrReadOnly, IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly,)

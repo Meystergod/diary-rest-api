@@ -2,7 +2,6 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from diary.models import Diary
-from account.models import User
 
 
 class Note(models.Model):

@@ -68,6 +68,14 @@ class NotesTests(APITestCase):
         response = self.client.post(self.url_list, data = data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.client.logout()
+        # test create new note (repeat data)
+        self.client.login(email = 'user1@user.ru', password = 'user')
+        self.client.credentials(HTTP_AUTHORIZATION = 'Token ' + self.test_user1_token.key)
+        data = {'content': 'note', 'diary': self.diary_test1.id}
+        response = self.client.post(self.url_list, data = data)
+        response = self.client.post(self.url_list, data = data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.client.logout()
 
     def test_error_post_note_list(self):
         # test create new note (non auth)
@@ -89,4 +97,33 @@ class NotesTests(APITestCase):
         response = self.client.post(self.url_list, data = data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.client.logout()
+        # test create new note (invalid user)
+        self.client.login(email = 'user1@user.ru', password = 'user')
+        self.client.credentials(HTTP_AUTHORIZATION = 'Token ' + self.test_user1_token.key)
+        data = {'content': 'note', 'diary': self.diary_test3.id}
+        response = self.client.post(self.url_list, data = data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.client.logout()
 
+    def test_get_note_detail(self):
+        # test get note detail (auth)
+        self.client.login(email = 'user1@user.ru', password = 'user')
+        self.client.credentials(HTTP_AUTHORIZATION = 'Token ' + self.test_user1_token.key)
+        url_detail = reverse('note-detail', kwargs = {'pk': self.note_test1.id})
+        response = self.client.get(url_detail)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.client.logout()
+
+    def test_error_get_note_detail(self):
+        # test get note detail (non auth)
+        url_detail = reverse('note-detail', kwargs = {'pk': self.note_test1.id})
+        response = self.client.get(url_detail)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data['detail'], 'Учетные данные не были предоставлены.')
+        # test get diary detail (invalid pk)
+        self.client.login(email = 'user1@user.ru', password = 'user')
+        self.client.credentials(HTTP_AUTHORIZATION = 'Token ' + self.test_user1_token.key)
+        url_detail = reverse('note-detail', kwargs = {'pk': 0})
+        response = self.client.get(url_detail)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.client.logout()
