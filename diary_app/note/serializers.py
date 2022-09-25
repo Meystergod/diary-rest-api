@@ -8,7 +8,7 @@ from .models import Note
 class NoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Note
-        fields = ('content', 'diary',)
+        fields = ('id', 'content', 'diary',)
 
     def validate(self, data):
         queryset = Diary.objects.all().filter(user = self.context['request'].user)
