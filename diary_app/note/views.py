@@ -11,7 +11,6 @@ from .paginations import NoteAPIListPagination
 
 
 class NoteAPIList(generics.ListCreateAPIView):
-    queryset = Note.objects.all()
     serializer_class = NoteSerializer
 
     filter_backends = (DjangoFilterBackend,)
@@ -21,9 +20,14 @@ class NoteAPIList(generics.ListCreateAPIView):
 
     permission_classes = (IsAuthenticated,)
 
+    def get_queryset(self):
+        return Note.objects.all().exclude(Q(diary__kind = 'private') & ~Q(diary__user = self.request.user))
+
 
 class NoteAPIDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Note.objects.all()
     serializer_class = NoteSerializer
 
-    permission_classes = (IsOwnerOrReadOnly, IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly,)
+
+    def get_queryset(self):
+        return Note.objects.all().exclude(Q(diary__kind = 'private') & ~Q(diary__user = self.request.user))
