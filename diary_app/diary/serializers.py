@@ -8,4 +8,4 @@ class DiarySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Diary
-        fields = ('title', 'kind', 'expiration', 'user')
+        fields = ('id', 'title', 'kind', 'expiration', 'user')
