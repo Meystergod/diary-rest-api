@@ -21,7 +21,7 @@ class NoteAPIList(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        return Note.objects.all().exclude(Q(diary__kind = 'private') & ~Q(diary__user = self.request.user))
+        return Note.objects.all().exclude(Q(diary__kind = 'private') & ~Q(diary__user = self.request.user)).distinct()
 
 
 class NoteAPIDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -30,4 +30,4 @@ class NoteAPIDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, IsOwnerOrReadOnly,)
 
     def get_queryset(self):
-        return Note.objects.all().exclude(Q(diary__kind = 'private') & ~Q(diary__user = self.request.user))
+        return Note.objects.all().exclude(Q(diary__kind = 'private') & ~Q(diary__user = self.request.user)).distinct()
